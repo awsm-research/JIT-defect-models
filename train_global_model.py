@@ -109,10 +109,19 @@ def eval_global_model(proj_name, x_test,y_test, global_model_name = 'RF'):
     pred = global_model.predict(x_test)
     prob = global_model.predict_proba(x_test)[:,1]
 
+    x_test_with_prediction = x_test.copy()
+    x_test_with_prediction['predict'] = pred
+
+    x_test_correctly_predicted_as_defective = x_test_with_prediction[x_test_with_prediction['predict']==True]
+    x_test_correctly_predicted_as_defective = x_test_correctly_predicted_as_defective.drop('predict',axis=1)
+
     auc = roc_auc_score(y_test, prob)
     f1 = f1_score(y_test, pred)
 
     print('AUC: {}, F1: {}'.format(auc,f1))
+
+    print('correctly predicted as defective commits')
+    print(x_test_correctly_predicted_as_defective.head())
 
 
 proj_name = sys.argv[1]
